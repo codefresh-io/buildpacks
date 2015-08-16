@@ -6,7 +6,7 @@ RUN apt-get update && \
         curl \
         git && \
 
-    curl -o resources/nvm_install.sh https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash && \
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash && \
 
     echo 'export NVM_DIR="/root/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bashrc && \
