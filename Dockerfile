@@ -1,4 +1,4 @@
-FROM codefresh/buildpacks:java7-jdk
+FROM codefresh/buildpacks:java7jdk
 
 MAINTAINER Guy Balteriski <guy@codefresh.io>
 
