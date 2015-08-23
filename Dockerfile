@@ -2,7 +2,7 @@ FROM gliderlabs/alpine:3.1
 
 MAINTAINER Guy Balteriski <guy@codefresh.io>
 
-RUN apk-install bash openjdk7 ca-certificates && \
+RUN apk-install bash git openjdk7 ca-certificates && \
   find /usr/share/ca-certificates/mozilla/ -name *.crt -exec keytool -import -trustcacerts \
   -keystore /usr/lib/jvm/java-1.7-openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
   -file {} -alias {} \; && \
