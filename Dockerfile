@@ -1,4 +1,4 @@
-ROM gliderlabs/alpine:3.1
+FROM gliderlabs/alpine:3.1
 
 MAINTAINER Guy Balteriski <guy@codefresh.io>
 
