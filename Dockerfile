@@ -1,52 +1,36 @@
-FROM codefresh/buildpacks:essential
+ROM codefresh/buildpacks:java7-jdk
 
-# Add Python pyenv and set default to 3.4.2
-RUN curl -o- https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash && \
+MAINTAINER Guy Balteriski <guy@codefresh.io>
 
-    echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /root/.bashrc && \
-    echo 'eval "$(pyenv init -)"' >> /root/.bashrc && \
-    echo 'eval "$(pyenv virtualenv-init -)"' >> /root/.bashrc && \
+# Versions
+ENV SCALA_VERSION 2.11.6
+ENV SBT_VERSION 0.13.8
 
-    bash -ilc 'pyenv install 3.4.2 && pyenv global 3.4.2'
+# Install scala and sbt
+RUN \
+  echo 'Installing scala...' && \
+  wget "http://www.scala-lang.org/files/archive/scala-$SCALA_VERSION.tgz" && \
+  tar xzf scala-$SCALA_VERSION.tgz -C /tmp/ && \
+  mv /tmp/scala-$SCALA_VERSION/* /usr/local/ && \
+  rm -rf scala-$SCALA_VERSION.tgz && \
+  echo 'Installing sbt...' && \
+  wget "http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/$SBT_VERSION/sbt-launch.jar" -P /usr/local/bin/ && \
+  echo '#!/bin/bash' > /usr/local/bin/sbt && \
+  echo 'SBT_OPTS="-Xms512M -Xmx1536M -Xss1M -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256M"' >> /usr/local/bin/sbt && \
+  echo 'java $SBT_OPTS -jar `dirname $0`/sbt-launch.jar "$@"' >> /usr/local/bin/sbt && \
+  chmod u+x /usr/local/bin/sbt && \
+  echo 'Fetching all sbt related dependencies...' && \
+  mkdir -p /tmp/sbt-dummy && \
+  echo 'name := "DummyProject"' > /tmp/sbt-dummy/build.sbt && \
+  echo 'version := "1.0"' >> /tmp/sbt-dummy/build.sbt && \
+  echo "scalaVersion := \"$SCALA_VERSION\"" >> /tmp/sbt-dummy/build.sbt && \
+  mkdir -p /tmp/sbt-dummy/src/main/scala && \
+  echo 'object Main { def main(args: Array[String]) = println("Dummy") }' > /tmp/sbt-dummy/src/main/scala/Main.scala && \
+  cd /tmp/sbt-dummy && sbt run && \
+  rm -rf /tmp/*
 
-# Install Ruby 2.2.2
-ENV RUBY_MAJOR=2.2 \
-    RUBY_VERSION=2.2.2 \
-    RUBYGEMS_VERSION=2.4.8 \
-    RUBY_DOWNLOAD_SHA256=5ffc0f317e429e6b29d4a98ac521c3ce65481bfd22a8cf845fa02a7b113d9b44
+# Set scala home for current installation
+ENV SCALA_HOME /usr/local
 
-RUN echo 'install: --no-document\nupdate: --no-document' >> "$HOME/.gemrc" && \
-
-    # some of ruby's build scripts are written in ruby
-    # we purge this later to make sure our final image uses what we just built
-    apt-get update \
-        && apt-get install -y bison libgdbm-dev ruby autoconf \
-        && rm -rf /var/lib/apt/lists/* \
-        && mkdir -p /usr/src/ruby \
-        && curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
-        && echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.gz" | sha256sum -c - \
-        && tar -xzf ruby.tar.gz -C /usr/src/ruby --strip-components=1 \
-        && rm ruby.tar.gz \
-        && cd /usr/src/ruby \
-        && autoconf \
-        && ./configure --disable-install-doc \
-        && make -j"$(nproc)" \
-        && make install \
-        && apt-get purge -y --auto-remove bison libgdbm-dev ruby autoconf \
-        && gem update --system $RUBYGEMS_VERSION \
-        && rm -r /usr/src/ruby
-
-
-ENV GEM_HOME=/usr/local/bundle \
-    PATH=$GEM_HOME/bin:$PATH \
-
-    BUNDLER_VERSION=1.10.6 \
-    BUNDLE_APP_CONFIG=$GEM_HOME \
-
-    RAILS_VERSION=4.2.3
-
-RUN gem install bundler --version "$BUNDLER_VERSION" && \
-    $GEM_HOME/bin/bundle config --global path "$GEM_HOME" && \
-    $GEM_HOME/bin/bundle config --global bin "$GEM_HOME/bin" && \
-    gem install rails --version "$RAILS_VERSION"
-
+# Run scala as default command
+CMD ["scala"]
