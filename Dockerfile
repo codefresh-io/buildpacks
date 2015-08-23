@@ -1,26 +1,15 @@
-FROM debian:wheezy
-RUN apt-get update && \
-    apt-get install -y \
-        ssh \
-        sshpass \
-        curl \
-        git && \
+ROM gliderlabs/alpine:3.1
 
-    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash && \
+MAINTAINER Guy Balteriski <guy@codefresh.io>
 
-    echo 'export NVM_DIR="/root/.nvm"' >> ~/.bashrc && \
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bashrc && \
+RUN apk-install bash openjdk7 ca-certificates && \
+  find /usr/share/ca-certificates/mozilla/ -name *.crt -exec keytool -import -trustcacerts \
+  -keystore /usr/lib/jvm/java-1.7-openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
+  -file {} -alias {} \; && \
+  keytool -list -keystore /usr/lib/jvm/java-1.7-openjdk/jre/lib/security/cacerts --storepass changeit
 
-    bash -ilc 'nvm install 0.12.7 \
-            && nvm alias 0.12.7 stable \
-            && nvm install iojs \
-            && nvm alias iojs stable \
-            && nvm alias default 0.12.7' && \
+# Expose reference to JAVA_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
 
-    bash -ilc 'npm install -g bower grunt-cli gulp && npm cache clean' && \
-
-    apt-get clean autoclean && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/
-
-
+# Adjust PATH to include all JDK related executables
+ENV PATH $JAVA_HOME/bin:$PATH
