@@ -2,7 +2,7 @@ FROM codefresh/buildpacks:nodejs
 MAINTAINER Guy Balteriski <guy@codefresh.io>
 
 RUN apt-get install -y \
-        openjdk-7-jdk
+        openjdk-7-jdk && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/{apt,dpkg,cache,log}
