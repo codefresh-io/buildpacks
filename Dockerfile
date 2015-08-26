@@ -1,10 +1,13 @@
 FROM debian:wheezy
-RUN apt-get update && \
+
+
+RUN echo "deb http://http.debian.net/debian wheezy-backports main" >/etc/apt/sources.list.d/wheezy-backports.list && \
+    apt-get update -qq && \
+    apt-get -t wheezy-backports install -y -qq git && \
     apt-get install -y \
         ssh \
         sshpass \
-        curl \
-        git && \
+        curl && \
 
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash && \
 
