@@ -86,6 +86,7 @@ RUN \
      apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
   && echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" \
      | tee /etc/apt/sources.list.d/mongodb-org-3.0.list \
+  && rm -rf /var/lib/apt/lists \
   && apt-get update -qq \
   && apt-get install -y --no-install-recommends \
      mongodb-org \
@@ -96,7 +97,11 @@ RUN \
 # ================================== Install memcached ==================================
 
 RUN \
-     apt-get install -y --no-install-recommends \
+  sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 40976EAF437D05B5 \
+  && sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 3B4FE6ACC0B21F32 \
+  && rm -rf /var/lib/apt/lists \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
     memcached \
   && apt-get clean autoclean libcomerr2 \
   && apt-get autoremove --yes \
@@ -107,6 +112,7 @@ ENV PG_MAJOR 9.3
 ENV PG_VERSION 9.3.9-1.pgdg80+1
 RUN \
     apt-get update -qq \
+   && rm -rf /var/lib/apt/lists \
    && apt-get install -y --no-install-recommends \
     postgresql-common \
    && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
