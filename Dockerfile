@@ -103,19 +103,12 @@ RUN \
 # ================================== Install memcached ==================================
 
 RUN \
-<<<<<<< Updated upstream
   sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 16126D3A3E5C1192 \
   && rm -rf /var/lib/apt/lists \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     memcached \
   && apt-get clean autoclean libcomerr2 \
-=======
-    apt-get update -qq \
-  && apt-get install -y --force-yes --no-install-recommends \
-     memcached \
-  && apt-get clean autoclean \
->>>>>>> Stashed changes
   && apt-get autoremove --yes \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
@@ -145,13 +138,6 @@ ENV LANG en_US.utf8
 
 RUN pg_createcluster $PG_MAJOR main --start \
     && /etc/init.d/postgresql start \
-#    && sudo -u postgres psql -c "update pg_database set datallowconn = TRUE where datname = 'template0'; \
-#    update pg_database set datistemplate = FALSE where datname = 'template1';" && \
-#    && sudo -u postgres psql -c "drop database template1;" && \
-#    && sudo -u postgres psql -c  "create database template1 with template = template0 encoding = 'UTF8';" && \
-#    && sudo -u postgres psql -c  "update pg_database set datistemplate = TRUE where datname = 'template1'; \
-#    update pg_database set datallowconn = FALSE where datname = 'template0'; \
-#    CREATE USER root PASSWORD 'root';ALTER USER root WITH SUPERUSER;"
     && sudo -u postgres psql -c "CREATE USER root PASSWORD 'root';ALTER USER root WITH SUPERUSER;"
 
 # ================================== Install rbenv and ruby-build ==================================
@@ -179,6 +165,9 @@ RUN \
     apt-get update -qq \
     && apt-get install -y -f --no-install-recommends \
        build-essential \
+       gcc \
+       libssl-dev \
+       zlib1g-dev \
     && apt-get clean autoclean libcomerr2 \
     && apt-get autoremove --yes \
     && rm -rf /var/lib/{apt,dpkg,cache,log}/ \
