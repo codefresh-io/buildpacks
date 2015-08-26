@@ -103,12 +103,19 @@ RUN \
 # ================================== Install memcached ==================================
 
 RUN \
+<<<<<<< Updated upstream
   sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 16126D3A3E5C1192 \
   && rm -rf /var/lib/apt/lists \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     memcached \
   && apt-get clean autoclean libcomerr2 \
+=======
+    apt-get update -qq \
+  && apt-get install -y --force-yes --no-install-recommends \
+     memcached \
+  && apt-get clean autoclean \
+>>>>>>> Stashed changes
   && apt-get autoremove --yes \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
