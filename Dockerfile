@@ -4,49 +4,55 @@
 
 FROM ubuntu:14.04
 
-# ================================== install ruby ==================================
+# ================================== install dependencies ==================================
+
 ENV HOME /root
+ADD ./sources.list /etc/apt/sources.list_n
+RUN \
+     rm /etc/apt/sources.list \
+  && cp /etc/apt/sources.list_n /etc/apt/sources.list
 RUN \
      mkdir -p $HOME \
   && apt-get update -qq \
   && apt-get install -y -f --no-install-recommends \
-    git \
-    autoconf \
-    bison \
-    build-essential \
-    imagemagick \
-    libbz2-dev \
-    libcurl4-openssl-dev \    
-    libevent-dev \
-    libffi-dev \
-    libglib2.0-dev \
-    libjpeg-dev \
-    libmagickcore-dev \
-    libmagickwand-dev \
-    libmysqlclient-dev \
-    libncurses-dev \
-    libpq-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    libssl-dev \
-    libxml2-dev \
-    libxslt-dev \
-    libyaml-dev \
-    libqtwebkit-dev \
-    net-tools \
-    qt4-qmake \
-    zlib1g-dev \
-    subversion \
-    wget \
-    curl \
-    ca-certificates \
+     git \
+     autoconf \
+     bison \
+     build-essential \
+     imagemagick \
+     libbz2-dev \
+     libcurl4-openssl-dev \
+     libevent-dev \
+     libffi-dev \
+     libglib2.0-dev \
+     libjpeg-dev \
+     libmagickcore-dev \
+     libmagickwand-dev \
+     libmysqlclient-dev \
+     libncurses-dev \
+     libpq-dev \
+     libreadline-dev \
+     libsqlite3-dev \
+     libssl-dev \
+     libxml2-dev \
+     libxslt-dev \
+     libyaml-dev \
+     libqtwebkit-dev \
+     net-tools \
+     qt4-qmake \
+     zlib1g-dev \
+     subversion \
+     wget \
+     curl \
+     build-essential \
   && apt-get install -y -f \
-    ssh \
+     ssh \
   && apt-get clean autoclean libcomerr2 \
   && apt-get autoremove --yes \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 # ================================== Redis ==================================
+
 RUN groupadd -r redis && useradd -r -g redis redis
 
 # grab gosu for easy step-down from root
@@ -97,8 +103,7 @@ RUN \
 # ================================== Install memcached ==================================
 
 RUN \
-  sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 40976EAF437D05B5 \
-  && sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 3B4FE6ACC0B21F32 \
+  sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 16126D3A3E5C1192 \
   && rm -rf /var/lib/apt/lists \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -108,13 +113,13 @@ RUN \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 # ================================== Install postgresql ==================================
+
 ENV PG_MAJOR 9.3
 ENV PG_VERSION 9.3.9-1.pgdg80+1
 RUN \
-    apt-get update -qq \
-   && rm -rf /var/lib/apt/lists \
+      apt-get update -qq \
    && apt-get install -y --no-install-recommends \
-    postgresql-common \
+      postgresql-common \
    && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
    && apt-get install -y --no-install-recommends \
       postgresql-$PG_MAJOR \
@@ -123,28 +128,33 @@ RUN \
       mysql-client \
       postgresql-client \
       sqlite3 \
-  && apt-get clean autoclean \
-  && apt-get autoremove --yes \
-  && rm -rf /var/lib/{apt,dpkg,cache,log}/
+      locales \
+   && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+   && apt-get clean autoclean \
+   && apt-get autoremove --yes \
+   && rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-RUN pg_createcluster $PG_MAJOR main --start && \
-        /etc/init.d/postgresql start && \
-		sudo -u postgres psql -c "update pg_database set datallowconn = TRUE where datname = 'template0'; \
-		update pg_database set datistemplate = FALSE where datname = 'template1';" && \
-		sudo -u postgres psql -c "drop database template1;" && \
-		sudo -u postgres psql -c  "create database template1 with template = template0 encoding = 'UTF8';" && \
-		sudo -u postgres psql -c  "update pg_database set datistemplate = TRUE where datname = 'template1'; \
-		update pg_database set datallowconn = FALSE where datname = 'template0'; \
-		CREATE USER root PASSWORD 'root';ALTER USER root WITH SUPERUSER;" 		
+ENV LANG en_US.utf8
+
+RUN pg_createcluster $PG_MAJOR main --start \
+    && /etc/init.d/postgresql start \
+#    && sudo -u postgres psql -c "update pg_database set datallowconn = TRUE where datname = 'template0'; \
+#    update pg_database set datistemplate = FALSE where datname = 'template1';" && \
+#    && sudo -u postgres psql -c "drop database template1;" && \
+#    && sudo -u postgres psql -c  "create database template1 with template = template0 encoding = 'UTF8';" && \
+#    && sudo -u postgres psql -c  "update pg_database set datistemplate = TRUE where datname = 'template1'; \
+#    update pg_database set datallowconn = FALSE where datname = 'template0'; \
+#    CREATE USER root PASSWORD 'root';ALTER USER root WITH SUPERUSER;"
+    && sudo -u postgres psql -c "CREATE USER root PASSWORD 'root';ALTER USER root WITH SUPERUSER;"
 
 # ================================== Install rbenv and ruby-build ==================================
 
 RUN \
-	mkdir -p /root/.ssh \
+    mkdir -p /root/.ssh \
 	&& ssh-keyscan github.com >> /root/.ssh/known_hosts \
 	&& git clone https://github.com/sstephenson/rbenv.git      $HOME/.rbenv \
 	&& git clone https://github.com/sstephenson/ruby-build.git $HOME/.rbenv/plugins/ruby-build \
-	&& $HOME/.rbenv/plugins/ruby-build/install.sh 
+	&& $HOME/.rbenv/plugins/ruby-build/install.sh
 
 ENV PATH $HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH
 
@@ -156,13 +166,22 @@ RUN \
 # ================================== Install multiple versions of ruby ==================================
 
 ADD ./versions.txt /root/versions.txt
+
+
 RUN \
-    curl -fsSL https://gist.githubusercontent.com/chrosciu/daa47f611104e6929c35/raw/a5054f2b3595c6464c280dd328ee03b9563f8c3c/readline.patch | rbenv install --patch 2.1.0 \
+    apt-get update -qq \
+    && apt-get install -y -f --no-install-recommends \
+       build-essential \
+    && apt-get clean autoclean libcomerr2 \
+    && apt-get autoremove --yes \
+    && rm -rf /var/lib/{apt,dpkg,cache,log}/ \
+    && curl -fsSL https://gist.githubusercontent.com/chrosciu/daa47f611104e6929c35/raw/a5054f2b3595c6464c280dd328ee03b9563f8c3c/readline.patch | rbenv install --patch 2.1.0 \
     && cat /root/versions.txt | xargs -L 1 rbenv install \
     && cat /root/versions.txt | xargs -L 1 rbenv global \
     && echo 'gem: --no-rdoc --no-ri' >> /$HOME/.gemrc
 
-# ================================== Install Bundler for each version of ruby ==================================
+# ======================== Install Bundler for each version of ruby ==================================
+
 RUN \
     gem install bundler \
     && rbenv rehash \
