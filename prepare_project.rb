@@ -90,11 +90,11 @@ test:
   end
 
   def set_yml_attr(databases_conn , env , name , value)
-    databases_conn[env][name] = attribute_str value, force_needed?(value)
+    databases_conn[env][name] = attribute_str value
   end
 
-  def force_needed?(value)
-    if @password == value
+  def force_needed?(name)
+    if name == 'password'
       !(@password.include?('\'') || @password.include?('"'))
     else
       false
