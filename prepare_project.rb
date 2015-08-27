@@ -4,9 +4,9 @@ def create_database_yml
 end
 
 def add_12_factor
-  File.open("Gemfile", "a") do |file|
-    file.puts "gem 'rails_12factor', group: :production"
-    file.puts "gem 'foreman'"
+  if File.exist?("Gemfile")
+    File.open("Gemfile", "a") { |file| file.puts "gem 'rails_12factor', group: :production"} unless File.readlines("Gemfile").grep(/rails_12factor/).any?
+    File.open("Gemfile", "a") { |file| file.puts "gem 'foreman'"} unless File.readlines("Gemfile").grep(/foreman/).any?
   end
 end
 
