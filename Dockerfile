@@ -52,14 +52,12 @@ RUN \
      sshpass \
   && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash \
   && echo 'export NVM_DIR="/root/.nvm"' >> ~/.bashrc \
-  && [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh \
-  && source ~/.nvm/nvm.sh \
   && echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bashrc \
-  && nvm install 0.12.7 \
-  && nvm alias 0.12.7 stable \
-  && nvm install iojs \
-  && nvm alias iojs stable \
-  && nvm alias default 0.12.7 \
+  && bash -ilc 'nvm install 0.12.7 \
+              && nvm alias 0.12.7 stable \
+              && nvm install iojs \
+              && nvm alias iojs stable \
+              && nvm alias default 0.12.7' \
   && npm install -g bower grunt-cli gulp && npm cache clean \
   && apt-get clean autoclean libcomerr2 \
   && apt-get autoremove --yes \
