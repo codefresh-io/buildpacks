@@ -15,6 +15,8 @@ RUN \
      mkdir -p $HOME \
   && apt-get update -qq \
   && apt-get install -y -f --no-install-recommends \
+     nodejs \
+     npm \
      git \
      autoconf \
      bison \
@@ -135,7 +137,6 @@ RUN \
    && apt-get install -y --no-install-recommends \
       postgresql-$PG_MAJOR \
       postgresql-contrib-$PG_MAJOR \
-      nodejs \
       mysql-client \
       postgresql-client \
       sqlite3 \
