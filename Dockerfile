@@ -1,13 +1,13 @@
 FROM codefresh/buildpacks:essential
 
-# Add Python pyenv and set default to 3.4.2
+# Add Python pyenv and set default to 2.7
 RUN curl -o- https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash && \
 
     echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /root/.bashrc && \
     echo 'eval "$(pyenv init -)"' >> /root/.bashrc && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> /root/.bashrc && \
 
-    bash -ilc 'pyenv install 3.4.2 && pyenv global 3.4.2'
+    bash -ilc 'pyenv install 2.7 && pyenv global 2.7'
 
 # Install Ruby 2.2.2
 ENV RUBY_MAJOR=2.2 \
