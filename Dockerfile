@@ -1,13 +1,11 @@
-FROM debian:wheezy
+FROM ubuntu:14.04
 
-
-RUN echo "deb http://http.debian.net/debian wheezy-backports main" >/etc/apt/sources.list.d/wheezy-backports.list && \
-    apt-get update -qq && \
-    apt-get -t wheezy-backports install -y -qq git && \
-    apt-get install -y \
-        ssh \
-        sshpass \
-        curl && \
+RUN sudo apt-get -q -y update && \
+    sudo apt-get -q -y install \
+    curl \
+    ssh \
+    git \
+    sshpass && \
 
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash && \
 
@@ -25,5 +23,4 @@ RUN echo "deb http://http.debian.net/debian wheezy-backports main" >/etc/apt/sou
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
-
 
