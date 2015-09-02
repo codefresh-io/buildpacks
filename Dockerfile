@@ -1,15 +1,18 @@
-ROM gliderlabs/alpine:3.1
-
+FROM codefresh/buildpacks:nodejs
 MAINTAINER Guy Balteriski <guy@codefresh.io>
 
-RUN apk-install bash openjdk7 ca-certificates && \
-  find /usr/share/ca-certificates/mozilla/ -name *.crt -exec keytool -import -trustcacerts \
-  -keystore /usr/lib/jvm/java-1.7-openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
-  -file {} -alias {} \; && \
-  keytool -list -keystore /usr/lib/jvm/java-1.7-openjdk/jre/lib/security/cacerts --storepass changeit
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository -y ppa:webupd8team/java && \
+    apt-get update && \
+    echo "oracle-java7-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections && \
+    apt-get install -y oracle-java7-installer && \
+    apt-get clean autoclean && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}
 
 # Expose reference to JAVA_HOME
-ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
+ENV JAVA_HOME /usr/lib/jvm/java-7-oracle
 
 # Adjust PATH to include all JDK related executables
 ENV PATH $JAVA_HOME/bin:$PATH
