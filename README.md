@@ -1,2 +1,2 @@
 # buildpacks
-Buildpacks for Codefresh CI - Java7 JDK
+Buildpacks for Codefresh CI - Java8 JDK
