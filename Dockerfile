@@ -24,3 +24,5 @@ RUN sudo apt-get -q -y update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
 
+ENV NVM_BIN /root/.nvm/versions/node/v0.12.7/bin
+ENV PATH $NVM_BIN:$PATH
