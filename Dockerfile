@@ -198,3 +198,4 @@ RUN \
 # ================================== database.yml create && 12_factor ==================================
 
 ADD prepare_project.rb /opt/codefresh/prepare_project.rb
+ADD prepare_db.rb /opt/codefresh/prepare_db.rb
