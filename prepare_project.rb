@@ -54,30 +54,29 @@ class DatabaseYMLGenerator
   end
 
   def get_new_file
-    "production:
-  #{attribute_yml "adapter", @adapter}
+"production:
+    #{attribute_yml "adapter", @adapter}
     #{attribute_yml "database", @database}
     #{attribute_yml "username", @username}
     #{attribute_yml "password", @password, true if @password}
     #{attribute_yml "host", @host}
     #{attribute_yml "port", @port}
 development:
-  #{attribute_yml "adapter", @adapter}
+    #{attribute_yml "adapter", @adapter}
     #{attribute_yml "database", @database}
     #{attribute_yml "username", @username}
     #{attribute_yml "password", @password, true if @password}
     #{attribute_yml "host", @host}
     #{attribute_yml "port", @port}
 test:
-  adapter: postgresql
-  encoding: utf8
-  database: code_fresh_test
-  pool: 5
-  username: root
-  password: root
-  min_messages: warning
-#{params_yml}
-    "
+    adapter: postgresql
+    encoding: utf8
+    database: code_fresh_test
+    pool: 5
+    username: root
+    password: root
+    min_messages: warning
+#{params_yml}"
   end
 
   def database_yml_by_uri(databases_conn , env)
