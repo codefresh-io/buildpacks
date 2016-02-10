@@ -41,18 +41,19 @@ RUN set -ex \
 # install "virtualenv", since the vast majority of users of this image will want it
 RUN pip install --no-cache-dir virtualenv
 
-# Install Ruby 2.2.2
+# Install Ruby 2.2.4
 ENV RUBY_MAJOR=2.2 \
-    RUBY_VERSION=2.2.2 \
-    RUBYGEMS_VERSION=2.4.8 \
-    RUBY_DOWNLOAD_SHA256=5ffc0f317e429e6b29d4a98ac521c3ce65481bfd22a8cf845fa02a7b113d9b44
+    RUBY_VERSION=2.2.4 \
+    RUBYGEMS_VERSION=2.5.2 \
+    RUBY_DOWNLOAD_SHA256=b6eff568b48e0fda76e5a36333175df049b204e91217aa32a65153cc0cdcb761
 
 RUN echo 'install: --no-document\nupdate: --no-document' >> "$HOME/.gemrc" && \
 
     # some of ruby's build scripts are written in ruby
     # we purge this later to make sure our final image uses what we just built
+    # libpq is needed for pg which is a popular dependency
     apt-get update \
-        && apt-get install -y bison libgdbm-dev ruby autoconf \
+        && apt-get install -y bison libgdbm-dev ruby autoconf libpq-dev \
         && rm -rf /var/lib/apt/lists/* \
         && mkdir -p /usr/src/ruby \
         && curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
@@ -69,16 +70,13 @@ RUN echo 'install: --no-document\nupdate: --no-document' >> "$HOME/.gemrc" && \
         && rm -r /usr/src/ruby
 
 
-ENV GEM_HOME=/usr/local/bundle \
-    PATH=$GEM_HOME/bin:$PATH \
-
+ENV GEM_HOME=/usr/local/bundle
+ENV PATH=$GEM_HOME/bin:$PATH \
     BUNDLER_VERSION=1.10.6 \
     BUNDLE_APP_CONFIG=$GEM_HOME \
-
-    RAILS_VERSION=4.2.3
+    RAILS_VERSION=4.2.5.1
 
 RUN gem install bundler --version "$BUNDLER_VERSION" && \
     $GEM_HOME/bin/bundle config --global path "$GEM_HOME" && \
     $GEM_HOME/bin/bundle config --global bin "$GEM_HOME/bin" && \
     gem install rails --version "$RAILS_VERSION"
-
