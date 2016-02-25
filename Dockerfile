@@ -7,16 +7,16 @@ RUN sudo apt-get -q -y update && \
     git \
     sshpass && \
 
-    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | bash && \
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash && \
 
     echo 'export NVM_DIR="/root/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bashrc && \
 
-    bash -ilc 'nvm install 4.2.2 \
-            && nvm alias 4.2.2 stable \
+    bash -ilc 'nvm install 5.7.0 \
+            && nvm alias 5.7.0 stable \
             && nvm install iojs \
             && nvm alias iojs stable \
-            && nvm alias default 4.2.2' && \
+            && nvm alias default 5.7.0' && \
 
     bash -ilc 'npm install -g bower grunt-cli gulp && npm cache clean' && \
 
@@ -24,5 +24,5 @@ RUN sudo apt-get -q -y update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-ENV NVM_BIN /root/.nvm/versions/node/v4.2.2/bin
+ENV NVM_BIN /root/.nvm/versions/node/v5.7.0/bin
 ENV PATH $NVM_BIN:$PATH
