@@ -1,4 +1,4 @@
-FROM codefresh/buildpacks:nodejs
+FROM codefresh/buildpacks:nodejs-5
 
 RUN apt-get update && \
         apt-get install -y \
@@ -14,4 +14,3 @@ RUN apt-get update && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/{apt,dpkg,cache,log}
-
