@@ -12,11 +12,11 @@ RUN sudo apt-get -q -y update && \
     echo 'export NVM_DIR="/root/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bashrc && \
 
-    bash -ilc 'nvm install 5.7.0 \
-            && nvm alias 5.7.0 stable \
+    bash -ilc 'nvm install 5.7.1 \
+            && nvm alias 5.7.1 stable \
             && nvm install iojs \
             && nvm alias iojs stable \
-            && nvm alias default 5.7.0' && \
+            && nvm alias default 5.7.1' && \
 
     bash -ilc 'npm install -g bower grunt-cli gulp && npm cache clean' && \
 
@@ -24,5 +24,5 @@ RUN sudo apt-get -q -y update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-ENV NVM_BIN /root/.nvm/versions/node/v5.7.0/bin
+ENV NVM_BIN /root/.nvm/versions/node/v5.7.1/bin
 ENV PATH $NVM_BIN:$PATH
