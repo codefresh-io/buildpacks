@@ -1,4 +1,4 @@
-FROM codefresh/buildpacks:essential
+FROM codefresh/buildpacks:essential-5
 
 # remove several traces of debian python
 RUN apt-get purge -y python.*
