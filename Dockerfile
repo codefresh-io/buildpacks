@@ -53,7 +53,7 @@ RUN echo 'install: --no-document\nupdate: --no-document' >> "$HOME/.gemrc" && \
     # we purge this later to make sure our final image uses what we just built
     # libpq is needed for pg which is a popular dependency
     apt-get update \
-        && apt-get install -y bison libgdbm-dev ruby autoconf libpq-dev \
+        && apt-get install -y bison libgdbm-dev ruby autoconf libpq-dev libkrb5-dev \
         && rm -rf /var/lib/apt/lists/* \
         && mkdir -p /usr/src/ruby \
         && curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
